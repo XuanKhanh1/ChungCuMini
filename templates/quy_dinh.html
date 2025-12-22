@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 600px;">
+    <div class="card bg-dark text-white shadow-lg border-secondary">
+        <div class="card-header bg-primary text-center">
+            <h3 class="fw-bold mb-0"><i class="fa-solid fa-gear"></i> THAY ĐỔI QUY ĐỊNH</h3>
+        </div>
+        <div class="card-body p-4">
+            <p class="text-muted text-center mb-4">
+                Lưu ý: Việc thay đổi giá sẽ áp dụng cho tất cả các hóa đơn được lập <b>sau thời điểm này</b>.
+            </p>
+
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label text-warning fw-bold">Giá Điện (VNĐ / kWh)</label>
+                    <input type="number" name="gia_dien" class="form-control bg-secondary text-white border-0"
+                           value="{{ '{:.0f}'.format(qd.gia_dien) }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-info fw-bold">Giá Nước (VNĐ / Khối)</label>
+                    <input type="number" name="gia_nuoc" class="form-control bg-secondary text-white border-0"
+                           value="{{ '{:.0f}'.format(qd.gia_nuoc) }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-success fw-bold">Phí Dịch Vụ (VNĐ / Tháng)</label>
+                    <input type="number" name="phi_dich_vu" class="form-control bg-secondary text-white border-0"
+                           value="{{ '{:.0f}'.format(qd.phi_dich_vu) }}" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-light fw-bold">Số người tối đa / phòng</label>
+                    <input type="number" name="so_nguoi_toi_da" class="form-control bg-secondary text-white border-0"
+                           value="{{ qd.so_nguoi_toi_da }}" required>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-warning fw-bold">
+                        <i class="fa-solid fa-floppy-disk"></i> LƯU THAY ĐỔI
+                    </button>
+                    <a href="/" class="btn btn-outline-light">Quay lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

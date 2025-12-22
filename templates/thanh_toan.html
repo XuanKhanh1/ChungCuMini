@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .bill-box {
+        background-color: black;
+        color: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        height: 100%; /* Đảm bảo chiều cao đồng bộ */
+    }
+    .row-item {
+        border-bottom: 1px solid #444;
+        padding: 10px 0;
+        display: flex;
+        justify-content: space-between;
+    }
+    .row-item:last-child {
+        border-bottom: none;
+    }
+    .total-price {
+        font-size: 1.5rem;
+        color: #0dcaf0; /* Màu xanh sáng */
+        font-weight: bold;
+    }
+    .qr-container {
+        background-color: white;
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        margin-top: 20px;
+    }
+    .qr-container img {
+        max-width: 100%;
+        height: auto;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-7 mb-3">
+            <div class="bill-box">
+                <h3 class="text-center text-primary mb-4">
+                    <i class="fa-solid fa-file-invoice-dollar"></i> Chi Tiết Hóa Đơn
+                </h3>
+
+                {% if hd %}
+                    <div class="text-center mb-3">
+                        {% if hd.trang_thai == 'ChuaThu' %}
+                            <span class="badge bg-danger fs-6">Chưa Thanh Toán</span>
+                        {% elif hd.trang_thai == 'ChoDuyet' %}
+                            <span class="badge bg-warning text-dark fs-6">Đang Chờ Duyệt</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="row-item">
+                        <span><i class="fa-solid fa-home"></i> Căn Hộ:</span>
+                        <span class="fw-bold">{{ can_ho }}</span>
+                    </div>
+                    <div class="row-item">
+                        <span><i class="fa-regular fa-calendar"></i> Tháng:</span>
+                        <span>{{ hd.thang }}</span>
+                    </div>
+
+                    <div class="mt-3 mb-2 text-warning fw-bold">Dịch vụ sử dụng:</div>
+
+                    <div class="row-item">
+                        <span>Điện ({{ hd.dien_moi }} - {{ hd.dien_cu }}):</span>
+                        <span>{{ "{:,.0f}".format(hd.tien_dien) }} đ</span>
+                    </div>
+                    <div class="row-item">
+                        <span>Nước ({{ hd.nuoc_moi }} - {{ hd.nuoc_cu }}):</span>
+                        <span>{{ "{:,.0f}".format(hd.tien_nuoc) }} đ</span>
+                    </div>
+                    <div class="row-item">
+                        <span>Tiền Phòng:</span>
+                        <span>{{ "{:,.0f}".format(hd.tien_phong) }} đ</span>
+                    </div>
+                    <div class="row-item">
+                        <span>Dịch Vụ Chung:</span>
+                        <span>{{ "{:,.0f}".format(hd.phi_dich_vu) }} đ</span>
+                    </div>
+
+                    <div class="row-item mt-3 pt-3 border-top border-secondary">
+                        <span class="h5">TỔNG CỘNG:</span>
+                        <span class="total-price">{{ "{:,.0f}".format(hd.tong_cong) }} VNĐ</span>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fa-solid fa-check-circle text-success fa-3x mb-3"></i>
+                        <h5>Tuyệt vời! Bạn không có hóa đơn nào cần thanh toán.</h5>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if hd %}
+        <div class="col-md-5">
+            <div class="bill-box text-center">
+
+                {% if hd.trang_thai == 'ChuaThu' %}
+                    <h4 class="text-warning mb-3">Quét QR để thanh toán</h4>
+                    <p class="text-secondary small">Mở App Momo, ZaloPay hoặc Ngân hàng để quét</p>
+
+                    <div class="qr-container">
+                        <img src="https://img.vietqr.io/image/{{ bank.ngan_hang }}-{{ bank.so_tai_khoan }}-compact.png?amount={{ hd.tong_cong }}&addInfo=Thanh toan tien phong {{ can_ho }} thang {{ hd.thang }}&accountName={{ bank.chu_tai_khoan }}"
+                             alt="QR Code Thanh Toán">
+                    </div>
+
+                    <div class="mt-3">
+                        <p class="mb-1">Ngân hàng: <strong>{{ bank.ngan_hang }}</strong></p>
+                        <p class="mb-1">STK: <strong>{{ bank.so_tai_khoan }}</strong></p>
+                        <p class="mb-1">Chủ TK: <strong>{{ bank.chu_tai_khoan }}</strong></p>
+                    </div>
+
+                    <hr class="border-secondary">
+
+                    <a href="{{ url_for('user_xac_nhan_thanh_toan', id_hoa_don=hd.id) }}"
+                       class="btn btn-success w-100 py-2"
+                       onclick="return confirm('Bạn xác nhận đã chuyển khoản thành công? Admin sẽ kiểm tra tài khoản.')">
+                        <i class="fa-solid fa-check"></i> Tôi Đã Chuyển Khoản
+                    </a>
+
+                {% elif hd.trang_thai == 'ChoDuyet' %}
+                    <div class="py-4">
+                        <i class="fa-solid fa-clock-rotate-left fa-4x text-info mb-3"></i>
+                        <h4 class="text-info">Đang Chờ Duyệt</h4>
+                        <p class="text-secondary mt-3">
+                            Bạn đã xác nhận chuyển khoản.<br>
+                            Vui lòng chờ Admin kiểm tra tài khoản ngân hàng và xác nhận.
+                        </p>
+                        <hr class="border-secondary">
+                        <button class="btn btn-secondary w-100" disabled>
+                            <i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

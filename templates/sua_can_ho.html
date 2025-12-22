@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .main-box {
+        background-color: black;
+        padding: 30px;
+        border-radius: 8px;
+        color: white; /* Chữ màu trắng */
+        max-width: 600px; /* Giới hạn chiều rộng cho đẹp */
+        margin: 0 auto;   /* Căn giữa màn hình */
+    }
+    .form-control, .form-select {
+        background-color: #212529; /* Input màu tối */
+        border: 1px solid #495057;
+        color: white;
+    }
+    .form-control:focus, .form-select:focus {
+        background-color: #2b3035;
+        color: white;
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    label {
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+</style>
+
+<div class="main-box shadow">
+    <h3 class="text-center mb-4 text-primary">
+        <i class="fa-solid fa-pen-to-square"></i> Sửa Căn Hộ: {{ can.ma_can }}
+    </h3>
+
+    <form method="POST">
+        <div class="mb-3">
+            <label>Mã Căn Hộ</label>
+            <input type="text" name="ma_can" class="form-control" value="{{ can.ma_can }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label>Diện Tích (m²)</label>
+            <input type="number" step="0.1" name="dien_tich" class="form-control" value="{{ can.dien_tich }}" required>
+        </div>
+
+        <div class="mb-4">
+            <label>Loại Phòng</label>
+            <select name="loai_phong" class="form-select">
+                <option value="Studio" {% if can.loai_phong == 'Studio' %}selected{% endif %}>Studio</option>
+                <option value="1 Ngủ" {% if can.loai_phong == '1 Ngủ' %}selected{% endif %}>1 Phòng Ngủ</option>
+                <option value="2 Ngủ" {% if can.loai_phong == '2 Ngủ' %}selected{% endif %}>2 Phòng Ngủ</option>
+            </select>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <a href="{{ url_for('page_them_can_ho') }}" class="btn btn-secondary">
+                <i class="fa-solid fa-arrow-left"></i> Quay Lại
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fa-solid fa-save"></i> Lưu Thay Đổi
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

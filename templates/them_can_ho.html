@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .header-box {
+        background-color: #000;
+        color: white;
+        padding: 20px;
+        border-radius: 5px 5px 0 0;
+        text-align: center;
+    }
+    .table-custom th {
+        background-color: #007bff;
+        color: white;
+        text-align: center;
+    }
+    .main-box {
+        background-color: black;
+        padding: 20px;
+        border-radius: 8px;
+    }
+    /* Style cho nút xóa để nhìn giống icon bình thường */
+    .btn-icon-delete {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+    }
+</style>
+
+<div class="main-box">
+
+    <h2 class="text-white text-center mb-4">Danh Sách Căn Hộ</h2>
+
+    <button class="btn btn-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#formAdd">
+        <i class="fa-solid fa-plus-circle"></i> Thêm Căn Hộ Mới
+    </button>
+
+    <div class="collapse mb-3" id="formAdd">
+        <div class="card card-body text-dark">
+            <form method="POST" action="{{ url_for('page_them_can_ho') }}">
+                <div class="row">
+                    <div class="col"><input type="text" name="ma_can" class="form-control" placeholder="Mã Căn (VD: A101)" required></div>
+                    <div class="col"><input type="number" step="0.1" name="dien_tich" class="form-control" placeholder="Diện Tích (m2)" required></div>
+                    <div class="col">
+                        <select name="loai_phong" class="form-select">
+                            <option value="Studio">Studio</option>
+                            <option value="1 Ngủ">1 Phòng Ngủ</option>
+                            <option value="2 Ngủ">2 Phòng Ngủ</option>
+                        </select>
+                    </div>
+                    <div class="col"><button type="submit" class="btn btn-success">Lưu</button></div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <table class="table table-dark table-bordered border-secondary">
+        <thead>
+            <tr style="background-color: #007bff !important;">
+                <th class="bg-primary text-white text-center">Mã Căn</th>
+                <th class="bg-primary text-white text-center">Diện Tích (m²)</th>
+                <th class="bg-primary text-white text-center">Loại Phòng</th>
+                <th class="bg-primary text-white text-center">Tình Trạng</th>
+                <th class="bg-primary text-white text-center">Hành Động</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ch in danh_sach %}
+            <tr>
+                <td class="text-center align-middle">{{ ch.ma_can }}</td>
+                <td class="text-center align-middle">{{ ch.dien_tich }}</td>
+                <td class="text-center align-middle">{{ ch.loai_phong }}</td>
+                <td class="text-center align-middle">
+                    {% if ch.tinh_trang == 'Trong' %}
+                        <span class="badge bg-success">Trống</span>
+                    {% elif ch.tinh_trang == 'DaThue' %}
+                        <span class="badge bg-danger">Đã Thuê</span>
+                    {% else %}
+                        <span class="badge bg-warning text-dark">Sửa Chữa</span>
+                    {% endif %}
+                </td>
+                <td class="text-center align-middle">
+                    <a href="{{ url_for('sua_can_ho', id=ch.id) }}" class="text-info" title="Sửa">
+                        <i class="fa-solid fa-pen"></i>
+                    </a>
+
+                    <form action="{{ url_for('xoa_can_ho', id=ch.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa căn {{ ch.ma_can }} không?');">
+                        <button type="submit" class="text-danger ms-2 btn-icon-delete" title="Xóa">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" class="text-center py-3">Chưa có dữ liệu căn hộ nào.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

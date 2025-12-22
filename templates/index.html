@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+
+    .hero-section {
+        text-align: center;
+        padding: 60px 20px;
+        background: #000;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        margin-bottom: 30px;
+        color: white;
+    }
+
+    .hero-section h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: #0dcaf0;
+    }
+
+    .hero-section p {
+        color: #aaa;
+        font-size: 1.2rem;
+    }
+
+
+    .apartment-gallery {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+    }
+
+    .apartment-item {
+
+        flex: 0 0 calc(33.333% - 10px);
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        height: 250px;
+    }
+
+
+    @media (max-width: 992px) {
+        .apartment-item { flex: 0 0 calc(50% - 10px); }
+    }
+    @media (max-width: 768px) {
+        .apartment-item { flex: 0 0 100%; }
+    }
+
+    .apartment-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+        cursor: pointer;
+    }
+
+    .apartment-item:hover img {
+        transform: scale(1.1);
+    }
+</style>
+
+<div class="hero-section">
+    <h1>Chào Mừng Đến Với Hệ Thống Căn Hộ Mini</h1>
+    <p>Khám phá không gian sống tiện nghi và hiện đại nhất.</p>
+</div>
+
+<div class="apartment-gallery">
+    <div class="apartment-item">
+        <img src="{{ url_for('static', filename='canho1.png') }}" alt="Căn hộ mẫu 1">
+    </div>
+    <div class="apartment-item">
+        <img src="{{ url_for('static', filename='canho2.png') }}" alt="Căn hộ mẫu 2">
+    </div>
+    <div class="apartment-item">
+        <img src="{{ url_for('static', filename='canho3.png') }}" alt="Căn hộ mẫu 3">
+    </div>
+    <div class="apartment-item">
+        <img src="{{ url_for('static', filename='canho4.png') }}" alt="Căn hộ mẫu 4">
+    </div>
+    <div class="apartment-item">
+        <img src="{{ url_for('static', filename='canho5.png') }}" alt="Căn hộ mẫu 5">
+    </div>
+    <div class="apartment-item">
+        <img src="{{ url_for('static', filename='canho6.png') }}" alt="Căn hộ mẫu 6">
+    </div>
+</div>
+
+{% endblock %}
