@@ -2,53 +2,48 @@
 
 {% block content %}
 <style>
+    body {
+        overflow: hidden;
+        background: #f5f7fa;
+    }
 
+    /* HERO */
     .hero-section {
         text-align: center;
-        padding: 60px 20px;
-        background: #000;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-        margin-bottom: 30px;
-        color: white;
+        padding: 40px 20px;
+        background: linear-gradient(135deg, #e0f2fe, #f0fdf4);
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        margin: 20px;
     }
 
     .hero-section h1 {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
         font-weight: 700;
-        margin-bottom: 15px;
-        color: #0dcaf0;
+        margin-bottom: 10px;
+        color: #0f172a;
     }
 
     .hero-section p {
-        color: #aaa;
-        font-size: 1.2rem;
+        color: #475569;
+        font-size: 1.1rem;
+        margin: 0;
     }
 
-
+    /* GALLERY */
     .apartment-gallery {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 15px;
-        justify-content: center;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        padding: 0 20px 20px;
+        height: calc(100vh - 220px);
     }
 
     .apartment-item {
-
-        flex: 0 0 calc(33.333% - 10px);
-        border-radius: 10px;
+        border-radius: 14px;
         overflow: hidden;
         position: relative;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        height: 250px;
-    }
-
-
-    @media (max-width: 992px) {
-        .apartment-item { flex: 0 0 calc(50% - 10px); }
-    }
-    @media (max-width: 768px) {
-        .apartment-item { flex: 0 0 100%; }
+        box-shadow: 0 6px 16px rgba(0,0,0,0.12);
     }
 
     .apartment-item img {
@@ -60,13 +55,30 @@
     }
 
     .apartment-item:hover img {
-        transform: scale(1.1);
+        transform: scale(1.08);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 992px) {
+        body {
+            overflow: auto;
+        }
+        .apartment-gallery {
+            grid-template-columns: repeat(2, 1fr);
+            height: auto;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .apartment-gallery {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 
 <div class="hero-section">
     <h1>Chào Mừng Đến Với Hệ Thống Căn Hộ Mini</h1>
-    <p>Khám phá không gian sống tiện nghi và hiện đại nhất.</p>
+    <p>Khám phá không gian sống tiện nghi và hiện đại nhất</p>
 </div>
 
 <div class="apartment-gallery">

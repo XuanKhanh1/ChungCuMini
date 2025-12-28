@@ -2,47 +2,89 @@
 
 {% block content %}
 <style>
+    body {
+        background-color: #f4f7fb;
+    }
+
+    /* MAIN BOX */
     .main-box {
-        background-color: #1a1a1a; /* Nền đen xám */
-        color: white;
-        padding: 25px;
-        border-radius: 8px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        background-color: #ffffff;
+        color: #1f2937;
+        padding: 28px;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     }
+
+    /* FORM */
     .form-control, .form-select {
-        background-color: #2c2c2c;
-        border: 1px solid #444;
-        color: #fff;
+        background-color: #ffffff;
+        border: 1px solid #d1d5db;
+        color: #111827;
+        border-radius: 10px;
     }
+
     .form-control:focus, .form-select:focus {
-        background-color: #333;
-        color: #fff;
-        border-color: #0d6efd;
-        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 0.2rem rgba(59,130,246,.2);
     }
+
+    /* TABLE */
+    .table-dark-custom {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
     .table-dark-custom th {
-        background-color: #0d6efd; /* Xanh dương */
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
         color: white;
         text-align: center;
         vertical-align: middle;
+        border: none;
+        padding: 14px;
     }
+
     .table-dark-custom td {
         vertical-align: middle;
         text-align: center;
-        background-color: #2c2c2c;
-        color: #e0e0e0;
-        border-color: #444;
+        background-color: #ffffff;
+        color: #374151;
+        border-color: #e5e7eb;
+        padding: 12px;
     }
-    /* Style cho option trong select để dễ nhìn hơn trên nền tối */
+
+    .table-dark-custom tbody tr:hover td {
+        background-color: #f1f5f9;
+    }
+
+    /* BADGES & TEXT */
+    .badge {
+        border-radius: 999px;
+        padding: 6px 12px;
+    }
+
     option {
-        background-color: #2c2c2c;
-        color: white;
+        background-color: #ffffff;
+        color: #111827;
+    }
+
+    /* BUTTON */
+    .btn-primary {
+        border-radius: 999px;
+        padding: 10px 20px;
+        font-weight: 600;
+    }
+
+    .btn-success {
+        border-radius: 999px;
+        font-weight: 600;
     }
 </style>
 
 <div class="container main-box">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold"><i class="fa-solid fa-file-contract"></i> Quản Lý Hợp Đồng</h2>
+        <h2 class="fw-bold text-primary">
+            <i class="fa-solid fa-file-contract me-1"></i> Quản Lý Hợp Đồng
+        </h2>
 
         {% if current_user.vai_tro == 'Admin' %}
         <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#formHopDong">
@@ -56,19 +98,22 @@
             {% for category, message in messages %}
                 <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
                     {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             {% endfor %}
         {% endif %}
     {% endwith %}
 
     <div class="collapse mb-4" id="formHopDong">
-        <div class="card card-body bg-dark border border-secondary">
-            <h5 class="card-title text-info mb-3">Nhập thông tin hợp đồng:</h5>
+        <div class="card card-body border-0 shadow-sm">
+            <h5 class="card-title text-primary mb-3 fw-bold">
+                Nhập thông tin hợp đồng
+            </h5>
+
             <form method="POST" action="{{ url_for('ql_hop_dong') }}">
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <label class="form-label text-secondary">Chọn Căn Hộ</label>
+                        <label class="form-label">Chọn Căn Hộ</label>
                         <select name="ma_can" class="form-select" required>
                             <option value="" selected disabled>-- Chọn phòng trống --</option>
                             {% if can_trong %}
@@ -84,46 +129,56 @@
                     </div>
 
                     <div class="col-md-4">
-                        <label class="form-label text-secondary">Chọn Người Thuê</label>
+                        <label class="form-label">Chọn Người Thuê</label>
                         <select name="id_nguoi_thue" class="form-select" required>
                             <option value="" selected disabled>-- Chọn tài khoản người thuê --</option>
                             {% if ds_users %}
                                 {% for u in ds_users %}
                                     <option value="{{ u.id }}">
-                                        {{ u.ho_ten }} (User: {{ u.ten_dang_nhap }})
+                                        {{ u.ho_ten }} ({{ u.ten_dang_nhap }})
                                     </option>
                                 {% endfor %}
                             {% else %}
-                                <option disabled>Chưa có tài khoản Người Thuê nào</option>
+                                <option disabled>Chưa có tài khoản</option>
                             {% endif %}
                         </select>
-                        <div class="form-text text-muted small mt-1">
-                            * Chưa có tên? <a href="{{ url_for('ql_tai_khoan') }}" class="text-decoration-none text-info">Tạo tài khoản trước</a>.
+                        <div class="form-text">
+                            * Chưa có tên?
+                            <a href="{{ url_for('ql_tai_khoan') }}" class="text-decoration-none text-primary">
+                                Tạo tài khoản
+                            </a>
                         </div>
                     </div>
 
                     <div class="col-md-4">
-                        <label class="form-label text-warning fw-bold">Số người ở (Max: {{ quy_dinh.so_nguoi_toi_da }})</label>
+                        <label class="form-label fw-bold text-warning">
+                            Số người ở (Max: {{ quy_dinh.so_nguoi_toi_da }})
+                        </label>
                         <input type="number" name="so_nguoi_o" class="form-control" value="1" min="1" required>
                     </div>
+
                     <div class="col-md-4">
-                        <label class="form-label text-secondary">Ngày bắt đầu</label>
+                        <label class="form-label">Ngày bắt đầu</label>
                         <input type="date" name="ngay_bat_dau" class="form-control" required>
                     </div>
+
                     <div class="col-md-4">
-                        <label class="form-label text-secondary">Thời hạn (Tháng)</label>
-                        <input type="number" name="thoi_han" class="form-control" placeholder="VD: 6, 12" required>
+                        <label class="form-label">Thời hạn (Tháng)</label>
+                        <input type="number" name="thoi_han" class="form-control" required>
                     </div>
+
                     <div class="col-md-4">
-                        <label class="form-label text-secondary">Giá thuê (VNĐ)</label>
-                        <input type="number" name="gia_thue" class="form-control" placeholder="Nhập số tiền" required>
+                        <label class="form-label">Giá thuê (VNĐ)</label>
+                        <input type="number" name="gia_thue" class="form-control" required>
                     </div>
+
                     <div class="col-md-4">
-                        <label class="form-label text-secondary">Tiền cọc (VNĐ)</label>
-                        <input type="number" name="tien_coc" class="form-control" placeholder="Nhập số tiền cọc" required>
+                        <label class="form-label">Tiền cọc (VNĐ)</label>
+                        <input type="number" name="tien_coc" class="form-control" required>
                     </div>
+
                     <div class="col-md-8 text-end mt-4">
-                        <button type="submit" class="btn btn-success fw-bold px-4 w-100">
+                        <button type="submit" class="btn btn-success w-100">
                             <i class="fa-solid fa-save"></i> Lưu Hợp Đồng
                         </button>
                     </div>
@@ -152,26 +207,20 @@
             <tbody>
                 {% for hd in danh_sach %}
                 <tr>
-                    <td class="text-warning fw-bold">{{ hd.ma_can }}</td>
-
-                    <td class="text-start ps-3">
-                        <i class="fa-regular fa-user text-secondary me-1"></i> {{ hd.nguoi_thue }}
-                    </td>
-
+                    <td class="fw-bold text-primary">{{ hd.ma_can }}</td>
+                    <td class="text-start ps-3">{{ hd.nguoi_thue }}</td>
                     <td class="fw-bold text-info">{{ hd.so_nguoi_o }}</td>
-
                     <td>{{ hd.ngay_bat_dau.strftime('%d/%m/%Y') }}</td>
                     <td><span class="badge bg-secondary">{{ hd.thoi_han }} Tháng</span></td>
-
-                    <td class="fw-bold text-light">{{ hd.ngay_ket_thuc.strftime('%d/%m/%Y') }}</td>
-
+                    <td class="fw-bold">{{ hd.ngay_ket_thuc.strftime('%d/%m/%Y') }}</td>
                     <td class="text-success">{{ "{:,.0f}".format(hd.gia_thue) }} đ</td>
                     <td>{{ "{:,.0f}".format(hd.tien_coc) }} đ</td>
 
                     {% if current_user.vai_tro == 'Admin' %}
                     <td>
-                        <form action="{{ url_for('xoa_hop_dong', id=hd.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn XÓA hợp đồng này không?');">
-                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa">
+                        <form action="{{ url_for('xoa_hop_dong', id=hd.id) }}" method="POST"
+                              onsubmit="return confirm('Bạn có chắc chắn muốn XÓA hợp đồng này không?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </form>
@@ -180,7 +229,9 @@
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="9" class="text-center py-4 text-muted">Chưa có hợp đồng nào.</td>
+                    <td colspan="9" class="text-center py-4 text-muted">
+                        Chưa có hợp đồng nào
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

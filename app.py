@@ -7,8 +7,7 @@ from models import db, CanHo, NguoiDung, HopDong, QuyDinh, HoaDon
 
 app = Flask(__name__)
 
-# --- CẤU HÌNH DATABASE ---
-# LƯU Ý: Nếu mật khẩu MySQL của ông không phải là 'Abc123', hãy sửa lại dòng dưới
+# database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Abc123@localhost/QuanLyCanHo'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'secret_key_bao_mat_cua_toi'
@@ -24,7 +23,7 @@ def load_user(user_id):
     return NguoiDung.query.get(int(user_id))
 
 
-# Hàm hỗ trợ tính ngày kết thúc hợp đồng
+# tinh ngay kthuc hop dong
 def cong_thang(ngay_goc, so_thang):
     thang_moi = ngay_goc.month - 1 + so_thang
     nam_moi = ngay_goc.year + thang_moi // 12
@@ -33,7 +32,7 @@ def cong_thang(ngay_goc, so_thang):
     return ngay_goc.replace(year=nam_moi, month=thang_moi, day=ngay_moi)
 
 
-# --- TRANG CHỦ ---
+# trang chu
 @app.route('/')
 def index():
     if current_user.is_authenticated:
@@ -48,7 +47,7 @@ def index():
     return render_template('index.html', danh_sach=ds)
 
 
-# --- ĐĂNG NHẬP ---
+# trang login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -81,7 +80,7 @@ def logout():
     return redirect(url_for('login'))
 
 
-# --- QUẢN LÝ TÀI KHOẢN (ADMIN) ---
+# admin - ql account
 @app.route('/quan-ly-tai-khoan', methods=['GET', 'POST'])
 @login_required
 def ql_tai_khoan():
@@ -139,7 +138,7 @@ def xoa_tai_khoan(id):
     return redirect(url_for('ql_tai_khoan'))
 
 
-# --- QUẢN LÝ CĂN HỘ (ADMIN) ---
+# admin - qlcan ho
 @app.route('/quan-ly-can-ho', methods=['GET', 'POST'])
 @login_required
 def page_them_can_ho():
@@ -213,7 +212,7 @@ def xoa_can_ho(id):
     return redirect(url_for('page_them_can_ho'))
 
 
-# --- QUẢN LÝ HỢP ĐỒNG ---
+# ql hop dong - 3 role
 @app.route('/quan-ly-hop-dong', methods=['GET', 'POST'])
 @login_required
 def ql_hop_dong():
@@ -324,7 +323,7 @@ def xoa_hop_dong(id):
     return redirect(url_for('ql_hop_dong'))
 
 
-# --- QUẢN LÝ HÓA ĐƠN ---
+# ql hoa don
 @app.route('/quan-ly-hoa-don', methods=['GET', 'POST'])
 @login_required
 def ql_hoa_don():
@@ -387,7 +386,7 @@ def ql_hoa_don():
             flash(f'Lỗi tính toán: {str(e)}', 'danger')
 
     phong_da_thue = CanHo.query.filter_by(tinh_trang='DaThue').all()
-    # Hiển thị tất cả hóa đơn để Admin quản lý
+    # tat ca hoa don
     ds_hoa_don = HoaDon.query.order_by(HoaDon.id.desc()).all()
 
     return render_template('quan_ly_hoa_don.html',
@@ -396,6 +395,7 @@ def ql_hoa_don():
                            quy_dinh=quy_dinh)
 
 
+# thay doi quy dinh - chu nha
 @app.route('/thay-doi-quy-dinh', methods=['GET', 'POST'])
 @login_required
 def thay_doi_quy_dinh():
@@ -426,6 +426,7 @@ def thay_doi_quy_dinh():
     return render_template('quy_dinh.html', qd=qd)
 
 
+# thong ke - chu nha vaf admin
 @app.route('/thong-ke')
 @login_required
 def thong_ke():
@@ -441,7 +442,7 @@ def thong_ke():
     data_doanh_thu = {}
 
     for hd in ds_hoa_don:
-        # Chỉ tính doanh thu những hóa đơn ĐÃ THU
+        # chi tinh hoa don da thu
         if hd.trang_thai == 'DaThu':
             t = hd.thang
             tien = float(hd.tong_cong)
@@ -476,6 +477,7 @@ def thong_ke():
                            ds_sap_het=hop_dong_sap_het)
 
 
+# thong tin ca nhan - khach
 @app.route('/thong-tin-ca-nhan')
 @login_required
 def thong_tin_ca_nhan():
@@ -499,7 +501,6 @@ def thong_tin_ca_nhan():
                            hoa_don=hoa_don_gan_nhat)
 
 
-# --- ROUTE CẤP CỨU ---
 @app.route('/tao-admin-gap')
 def tao_admin_gap():
     u = NguoiDung.query.filter_by(ten_dang_nhap='admin').first()
@@ -521,20 +522,19 @@ def tao_admin_gap():
         return "Database đang trống. Đã TẠO MỚI tài khoản: admin / 123"
 
 
-# --- CHỨC NĂNG THANH TOÁN & DUYỆT (MỚI THÊM) ---
+# thanh toan (cua khach) - duyet hoa don (admin)
 @app.route('/thanh-toan')
 @login_required
 def thanh_toan():
-    # 1. Tìm hợp đồng
+    # tim hop dong
     hop_dong = HopDong.query.filter_by(id_nguoi_dung=current_user.id).order_by(HopDong.id.desc()).first()
 
     if not hop_dong:
         flash('Bạn chưa có hợp đồng thuê phòng nào!', 'warning')
         return redirect(url_for('thong_tin_ca_nhan'))
 
-    # 2. Tìm hóa đơn mới nhất (không quan tâm trạng thái để hiện ChoDuyet nếu có)
-    # Lấy hóa đơn mới nhất mà KHÔNG PHẢI là "DaThu" (tức là ChuaThu hoặc ChoDuyet)
-    # Hoặc nếu không có nợ thì nó sẽ ra None
+    # tim hoa don moi
+    # lay hoa donwd chua thu - neu ko co no. thi no se tra ve none
     hoa_don = HoaDon.query.filter_by(ma_can=hop_dong.ma_can).filter(HoaDon.trang_thai != 'DaThu').order_by(
         HoaDon.id.desc()).first()
 
@@ -550,11 +550,8 @@ def thanh_toan():
 @app.route('/user-xac-nhan-thanh-toan/<int:id_hoa_don>')
 @login_required
 def user_xac_nhan_thanh_toan(id_hoa_don):
-    # Người thuê xác nhận đã chuyển khoản
+    # xac nhan ck
     hoa_don = HoaDon.query.get_or_404(id_hoa_don)
-
-    # Kiểm tra bảo mật: Hóa đơn này phải thuộc về hợp đồng của user đang đăng nhập
-    # (Để đơn giản ta bỏ qua bước check sâu này, chỉ check trạng thái)
 
     if hoa_don.trang_thai == 'ChuaThu':
         hoa_don.trang_thai = 'ChoDuyet'
@@ -567,7 +564,7 @@ def user_xac_nhan_thanh_toan(id_hoa_don):
 @app.route('/admin-duyet-thanh-toan/<int:id_hoa_don>')
 @login_required
 def admin_duyet_thanh_toan(id_hoa_don):
-    # Admin xác nhận tiền đã về
+    # admin xac nhan ck thanh cong
     if current_user.vai_tro != 'Admin':
         flash('Bạn không có quyền này!', 'danger')
         return redirect(url_for('index'))
